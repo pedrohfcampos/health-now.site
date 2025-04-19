@@ -16,9 +16,15 @@
     <link rel="dns-prefetch" href="https://api.vturb.com.br">
   
     <script>
+    // Função auxiliar para obter cookies
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+        return match ? decodeURIComponent(match[1]) : null;
+    }
+
     // Obtém os parâmetros da URL
     const params = new URLSearchParams(window.location.search),
-        clickid = params.get("rtkcid"),
+        clickid = getCookie("rtkcid"),   // ← agora o clickid vem do cookie “rtkcid”
         rdtk_event_id = params.get("ip");
 
     function startOfferTimer() {
@@ -89,14 +95,13 @@
         };
 
         window.addEventListener("DOMContentLoaded", function() {
-        fetch(e.view);
-        const pitchViewFlag = localStorage.getItem("pitchView");
-        if (pitchViewFlag === "true") {
-            console.log("Pitch View previamente visualizado. Abrindo todas as seções.");
-            displayOnPitch();
-          }
+            fetch(e.view);
+            const pitchViewFlag = localStorage.getItem("pitchView");
+            if (pitchViewFlag === "true") {
+                console.log("Pitch View previamente visualizado. Abrindo todas as seções.");
+                displayOnPitch();
+            }
         });
-
 
         window.addEventListener("message", function(t) {
             if (t.data === "VSL View") {
@@ -110,7 +115,7 @@
             if (t.data === "VSL - Play") {
                 fetch(e.play);
                 document.querySelectorAll('.hide-on-play').forEach(function(element) {element.style.display = 'none';});
-                                document.body.style.backgroundColor = '#000000';
+                document.body.style.backgroundColor = '#000000';
                 console.log("VSL - Play");
             }
             if (t.data === "VSL - 3 View") {
@@ -132,10 +137,10 @@
             if (t.data === "VSL - Pitch View") {
                 // Armazena a flag no localStorage
                 localStorage.setItem("pitchView", "true");
-                                
+                
                 fetch(e.pitchView);
                 console.log("VSL - Pitch View");
-                                
+                
                 // Executa as ações para abrir todas as seções
                 displayOnPitch();
             }
